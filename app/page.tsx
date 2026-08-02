@@ -162,9 +162,9 @@ export default function Home() {
         <section className="hero-grid">
           <div className="hero-copy">
             <p className="eyebrow">CLUB BY CLUB. ONE PLAYER.</p>
-            <h1>How early can you see the career?</h1>
+            <h1>How early can you guess the player?</h1>
             <p className="hero-text">
-              Follow a footballer&apos;s senior career in order. Guess after one club for the maximum score, or reveal another and make it easier.
+              Follow a footballer&apos;s senior career in order. Guess early for more points, or reveal another club to make it easier.
             </p>
             <div className="rule-row">
               <span>5 players</span>
@@ -178,14 +178,14 @@ export default function Home() {
           </div>
 
           <div className="preview-card">
-            <div className="preview-topline"><span>EXAMPLE PATH</span><span>1,000 PTS</span></div>
+            <div className="preview-topline"><span>EXAMPLE PATH</span><span>KEEP REVEALING</span></div>
             <div className="preview-path">
-              <CareerStop club="Cannes" index={0} />
-              <div className="hidden-stop">?</div>
-              <div className="hidden-stop">?</div>
+              <CareerStop club="Southampton" index={0} />
+              <CareerStop club="Tottenham Hotspur" index={1} />
+              <CareerStop club="Real Madrid" index={2} />
               <div className="hidden-stop">?</div>
             </div>
-            <div className="preview-answer">Who is it?</div>
+            <div className="preview-answer">How early would you have guessed Gareth Bale?</div>
           </div>
         </section>
 
