@@ -1,8 +1,8 @@
-# Career Path
+# Played For
 
-**Guess the footballer from their clubs.**
+**Guess the footballer from the clubs they played for.**
 
-Career Path is a five-round football knowledge game. A player's senior clubs are revealed chronologically. Guess early for more points, reveal another club to make it easier, but a wrong recognised player scores zero for the round.
+Played For is a five-round football knowledge game. A player's senior clubs are revealed chronologically. Guess early for more points, reveal another club to make it easier, but a wrong recognised player scores zero for the round.
 
 ## MVP rules
 
