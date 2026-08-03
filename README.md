@@ -22,6 +22,13 @@ Played For is a five-round football knowledge game. A player's senior clubs are 
 - Searchable autocomplete supports stored aliases and accent-insensitive matching.
 - Scoring adapts to career length: the first club is always worth 1,000, every additional reveal lowers the score, and revealing the complete career leaves 0 points available.
 
+## Player bank
+
+- 40 curated retired players are currently available across Daily Five and Practice.
+- The bank is split into a base set and expansion file so it can grow without turning into one unmanageable data file.
+- Every player ID has a corresponding career source in `data/player-sources.ts`.
+- Validation tests fail if a player is missing a source or if duplicate player IDs are introduced.
+
 ## Run locally
 
 ```bash
@@ -45,8 +52,8 @@ The score is based on the proportion of the career still hidden after the first 
 
 ## Next up
 
-- Curate difficulty and expand the player bank.
+- Curate Daily Five difficulty rather than drawing five completely unconstrained profiles.
 - Add recent-player avoidance in Practice.
-- Add sourced career data and content validation.
 - Add properly licensed player imagery to the reveal state.
+- Grow the sourced player bank beyond 40.
 - Add streaks only after the Daily Five system has proved stable.
