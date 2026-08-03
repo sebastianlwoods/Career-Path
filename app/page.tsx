@@ -24,7 +24,7 @@ function BrandLockup() {
   return (
     <div className="brand-lockup">
       <span className="brand-kicker">THE FOOTBALL QUIZ</span>
-      <strong>Career Path</strong>
+      <strong>Played For</strong>
     </div>
   );
 }
@@ -170,8 +170,8 @@ export default function Home() {
 
         <section className="hero-grid">
           <div className="hero-copy">
-            <p className="eyebrow">PLAYER PROFILES · TRANSFER TRAILS · ONE GUESS</p>
-            <p className="cover-line">A five-player test of transfer memory</p>
+            <p className="eyebrow">CLUB HISTORIES · PLAYER PROFILES · ONE GUESS</p>
+            <p className="cover-line">Guess the footballer from the clubs they played for</p>
             <h1>How early can you guess the player?</h1>
             <p className="hero-text">
               Follow a footballer&apos;s senior career in order. Guess early for more points, or reveal another club to make it easier.
@@ -183,13 +183,13 @@ export default function Home() {
               <span>LOANS INCLUDED</span>
             </div>
             <button className="primary-button" onClick={startGame}>
-              Play the issue <span>→</span>
+              Start the game <span>→</span>
             </button>
           </div>
 
           <div className="preview-card">
-            <div className="preview-ribbon">PLAYER FILE / EXAMPLE</div>
-            <div className="preview-topline"><span>THE TRANSFER TRAIL</span><span>ARCHIVE No. 11</span></div>
+            <div className="preview-ribbon">PLAYED FOR / EXAMPLE</div>
+            <div className="preview-topline"><span>THE CLUB TRAIL</span><span>ARCHIVE No. 11</span></div>
             <div className="preview-path">
               <CareerStop club="Southampton" index={0} />
               <CareerStop club="Tottenham Hotspur" index={1} />
@@ -240,6 +240,7 @@ export default function Home() {
   if (!current) return null;
 
   const availableScore = scoreForRevealCount(revealed, current.career.length);
+  const solvedClub = current.career[Math.max(0, revealed - 1)]?.club;
 
   return (
     <main className="shell game-shell">
@@ -249,18 +250,37 @@ export default function Home() {
       </nav>
 
       <section className="game-card">
-        <div className="feature-label">PLAYER PROFILE / SENIOR CAREER</div>
+        <div className="feature-label">PLAYED FOR / SENIOR CAREER</div>
         <div className="round-head">
           <div>
-            <p className="eyebrow">TRANSFER ARCHIVE · FILE {String(roundIndex + 1).padStart(2, "0")}</p>
-            <h1>{roundOver ? current.name : "Who is this footballer?"}</h1>
+            <p className="eyebrow">PLAYER FILE · {String(roundIndex + 1).padStart(2, "0")}</p>
+            <h1>{roundOver ? current.name : "Who played for these clubs?"}</h1>
           </div>
-          <div className="score-badge"><small>POINTS ON THE LINE</small><b>{roundOver ? roundResult?.score ?? 0 : availableScore}</b></div>
+          <div className="score-badge"><small>{roundOver ? "ROUND SCORE" : "POINTS ON THE LINE"}</small><b>{roundOver ? roundResult?.score ?? 0 : availableScore}</b></div>
         </div>
 
-        <RevealTradeoff revealed={revealed} totalStops={current.career.length} />
+        {!roundOver ? (
+          <RevealTradeoff revealed={revealed} totalStops={current.career.length} />
+        ) : (
+          <div className={roundResult?.correct ? "reveal-splash reveal-correct" : "reveal-splash reveal-wrong"}>
+            <span className="reveal-stamp">{roundResult?.correct ? "GOT HIM" : "MISSED"}</span>
+            <div className="reveal-copy">
+              <p className="reveal-kicker">PLAYER REVEALED</p>
+              <h2>{current.name}</h2>
+              <div className="reveal-meta">
+                <span>{current.nationality}</span>
+                <span>{current.career.length} senior spell{current.career.length === 1 ? "" : "s"}</span>
+              </div>
+            </div>
+            <div className="reveal-score">
+              <small>{roundResult?.correct ? "POINTS BANKED" : "ROUND SCORE"}</small>
+              <strong>{roundResult?.score ?? 0}</strong>
+              <span>{roundResult?.correct ? `Solved after ${revealed} club${revealed === 1 ? "" : "s"}${solvedClub ? ` · ${solvedClub}` : ""}` : `You guessed ${roundResult?.guessedName}`}</span>
+            </div>
+          </div>
+        )}
 
-        <div className="section-ribbon"><span>Senior career</span><small>chronological · loans marked</small></div>
+        <div className="section-ribbon"><span>{roundOver ? "Complete senior career" : "Senior career"}</span><small>{roundOver ? "file now fully revealed" : "chronological · loans marked"}</small></div>
         <div className="path-list">
           {current.career.map((stop, index) => {
             const visible = roundOver || index < revealed;
@@ -305,12 +325,8 @@ export default function Home() {
             </div>
           </div>
         ) : (
-          <div className={roundResult?.correct ? "feedback correct-feedback" : "feedback wrong-feedback"}>
-            <div>
-              <p>{roundResult?.correct ? "BACK PAGE HERO" : "OFF TARGET"}</p>
-              <h2>{roundResult?.correct ? `+${roundResult.score} points` : `${roundResult?.guessedName} was not the answer.`}</h2>
-              <small>{current.nationality}</small>
-            </div>
+          <div className="reveal-footer">
+            <p>{roundResult?.correct ? "Nice. The rest of the file is open above." : `The answer was ${current.name}. The full route is now open above.`}</p>
             <button className="primary-button compact" onClick={nextRound}>{roundIndex === rounds.length - 1 ? "See scorecard" : "Next player"}<span>→</span></button>
           </div>
         )}
