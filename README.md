@@ -4,9 +4,15 @@
 
 Played For is a five-round football knowledge game. A player's senior clubs are revealed chronologically. Guess early for more points, reveal another club to make it easier, but a wrong recognised player scores zero for the round.
 
-## MVP rules
+## Game modes
 
-- Five random players per game.
+- **Daily Five:** the same five players for everyone on a given UTC date, with a numbered daily challenge beginning at Played For #1 on 3 August 2026.
+- **Practice:** unlimited random five-player games using the same rules and scoring.
+- Completed Daily Five results are remembered in local browser storage and can be shared without player names or club spoilers.
+
+## Core rules
+
+- Five players per game.
 - Senior competitive clubs only.
 - Loan spells are included and marked `(loan)`.
 - Return spells appear again in the chronology.
@@ -40,7 +46,7 @@ The score is based on the proportion of the career still hidden after the first 
 ## Next up
 
 - Curate difficulty and expand the player bank.
-- Add a deterministic Daily Five.
-- Add shareable result grid.
 - Add recent-player avoidance in Practice.
 - Add sourced career data and content validation.
+- Add properly licensed player imagery to the reveal state.
+- Add streaks only after the Daily Five system has proved stable.
