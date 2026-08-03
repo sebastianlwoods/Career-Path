@@ -1,6 +1,7 @@
 import type { Player } from "./players";
+import { nichePlayers } from "./players-niche";
 
-export const extraPlayers: Player[] = [
+const firstExpansion: Player[] = [
   {
     id: "samuel-etoo",
     name: "Samuel Eto'o",
@@ -313,3 +314,5 @@ export const extraPlayers: Player[] = [
     ],
   },
 ];
+
+export const extraPlayers: Player[] = [...firstExpansion, ...nichePlayers];
