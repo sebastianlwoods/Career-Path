@@ -1,12 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { players, type Player } from "../data/players";
 import {
+  chooseDailyRounds,
   chooseRounds,
+  dailyNumberForDate,
   getPlayerSuggestions,
   resolvePlayerInput,
   scoreForRevealCount,
+  utcDateKey,
 } from "../lib/game";
 
 type RoundResult = {
@@ -19,6 +22,7 @@ type RoundResult = {
 };
 
 type Phase = "menu" | "playing" | "results";
+type GameMode = "daily" | "practice";
 
 function BrandLockup() {
   return (
@@ -65,8 +69,21 @@ function RevealTradeoff({ revealed, totalStops }: { revealed: number; totalStops
   );
 }
 
+function shareGlyph(result: RoundResult) {
+  if (!result.correct) return "⬛";
+  if (result.score >= 800) return "🟩";
+  if (result.score >= 500) return "🟨";
+  if (result.score > 0) return "🟧";
+  return "🟦";
+}
+
+function dailyStorageKey(dateKey: string) {
+  return `played-for:daily:${dateKey}`;
+}
+
 export default function Home() {
   const [phase, setPhase] = useState<Phase>("menu");
+  const [gameMode, setGameMode] = useState<GameMode>("practice");
   const [rounds, setRounds] = useState<Player[]>([]);
   const [roundIndex, setRoundIndex] = useState(0);
   const [revealed, setRevealed] = useState(1);
@@ -76,16 +93,33 @@ export default function Home() {
   const [roundOver, setRoundOver] = useState(false);
   const [roundResult, setRoundResult] = useState<RoundResult | null>(null);
   const [results, setResults] = useState<RoundResult[]>([]);
+  const [savedDailyResults, setSavedDailyResults] = useState<RoundResult[] | null>(null);
+  const [shareStatus, setShareStatus] = useState("");
 
+  const dailyDateKey = utcDateKey();
+  const dailyNumber = dailyNumberForDate(dailyDateKey);
   const current = rounds[roundIndex];
   const suggestions = useMemo(
     () => (roundOver ? [] : getPlayerSuggestions(players, input)),
     [input, roundOver]
   );
   const totalScore = results.reduce((sum, result) => sum + result.score, 0);
+  const correctCount = results.filter((result) => result.correct).length;
 
-  function startGame() {
-    setRounds(chooseRounds(players));
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(dailyStorageKey(dailyDateKey));
+      if (!saved) return;
+      const parsed = JSON.parse(saved) as { results?: RoundResult[] };
+      if (Array.isArray(parsed.results) && parsed.results.length === 5) {
+        setSavedDailyResults(parsed.results);
+      }
+    } catch {
+      // Daily still works if storage is unavailable; only completion memory is lost.
+    }
+  }, [dailyDateKey]);
+
+  function resetRoundState() {
     setRoundIndex(0);
     setRevealed(1);
     setInput("");
@@ -93,6 +127,21 @@ export default function Home() {
     setError("");
     setRoundOver(false);
     setRoundResult(null);
+    setShareStatus("");
+  }
+
+  function startGame(mode: GameMode) {
+    setGameMode(mode);
+    resetRoundState();
+
+    if (mode === "daily" && savedDailyResults?.length === 5) {
+      setRounds(chooseDailyRounds(players, dailyDateKey));
+      setResults(savedDailyResults);
+      setPhase("results");
+      return;
+    }
+
+    setRounds(mode === "daily" ? chooseDailyRounds(players, dailyDateKey) : chooseRounds(players));
     setResults([]);
     setPhase("playing");
   }
@@ -140,10 +189,23 @@ export default function Home() {
       revealed,
     };
 
+    const nextResults = [...results, result];
     setRoundResult(result);
-    setResults((previous) => [...previous, result]);
+    setResults(nextResults);
     setRoundOver(true);
     setError("");
+
+    if (gameMode === "daily" && roundIndex === rounds.length - 1) {
+      setSavedDailyResults(nextResults);
+      try {
+        window.localStorage.setItem(
+          dailyStorageKey(dailyDateKey),
+          JSON.stringify({ dateKey: dailyDateKey, results: nextResults })
+        );
+      } catch {
+        // The completed score still works for this session if storage is blocked.
+      }
+    }
   }
 
   function nextRound() {
@@ -160,21 +222,60 @@ export default function Home() {
     setRoundResult(null);
   }
 
+  function dailyShareText() {
+    const grid = results.map(shareGlyph).join(" ");
+    return [
+      `Played For #${dailyNumber}`,
+      `${correctCount}/5 · ${totalScore.toLocaleString()}/5,000`,
+      grid,
+      typeof window !== "undefined" ? window.location.origin : "",
+    ].filter(Boolean).join("\n");
+  }
+
+  async function shareDailyResult() {
+    const text = dailyShareText();
+    setShareStatus("");
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: `Played For #${dailyNumber}`, text });
+        setShareStatus("Shared.");
+        return;
+      } catch (shareError) {
+        if (shareError instanceof DOMException && shareError.name === "AbortError") return;
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(text);
+      setShareStatus("Result copied to clipboard.");
+    } catch {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      textarea.remove();
+      setShareStatus("Result copied to clipboard.");
+    }
+  }
+
   if (phase === "menu") {
+    const savedDailyScore = savedDailyResults?.reduce((sum, result) => sum + result.score, 0) ?? 0;
     return (
       <main className="shell landing-shell">
         <nav className="topbar">
           <BrandLockup />
-          <span className="beta-pill">ISSUE 01 · FIVE PLAYERS</span>
+          <span className="beta-pill">DAILY #{String(dailyNumber).padStart(3, "0")} · FIVE PLAYERS</span>
         </nav>
 
         <section className="hero-grid">
           <div className="hero-copy">
             <p className="eyebrow">CLUB HISTORIES · PLAYER PROFILES · ONE GUESS</p>
-            <p className="cover-line">Guess the footballer from the clubs they played for</p>
+            <p className="cover-line">Today&apos;s five are the same for everyone</p>
             <h1>How early can you guess the player?</h1>
             <p className="hero-text">
-              Follow a footballer&apos;s senior career in order. Guess early for more points, or reveal another club to make it easier.
+              Follow a footballer&apos;s senior career in order. Guess early for more points, or reveal another club to make it easier. Play the Daily Five once, then practise as much as you like.
             </p>
             <div className="rule-row">
               <span>5 PLAYER FILES</span>
@@ -182,9 +283,19 @@ export default function Home() {
               <span>WRONG = 0</span>
               <span>LOANS INCLUDED</span>
             </div>
-            <button className="primary-button" onClick={startGame}>
-              Start the game <span>→</span>
-            </button>
+            <div className="mode-actions">
+              <button className="primary-button" onClick={() => startGame("daily")}>
+                {savedDailyResults ? "View daily score" : "Play Daily Five"} <span>→</span>
+              </button>
+              <button className="secondary-button" onClick={() => startGame("practice")}>
+                Practice mode
+              </button>
+            </div>
+            <p className="daily-status">
+              {savedDailyResults
+                ? `Daily #${dailyNumber} complete · ${savedDailyScore.toLocaleString()}/5,000`
+                : `Daily #${dailyNumber} · one scored run today`}
+            </p>
           </div>
 
           <div className="preview-card">
@@ -210,7 +321,7 @@ export default function Home() {
   }
 
   if (phase === "results") {
-    const correctCount = results.filter((result) => result.correct).length;
+    const isDaily = gameMode === "daily";
     return (
       <main className="shell results-shell">
         <nav className="topbar">
@@ -218,10 +329,23 @@ export default function Home() {
           <button className="text-button" onClick={() => setPhase("menu")}>Back to cover</button>
         </nav>
         <section className="results-card">
-          <div className="feature-label">FINAL WHISTLE / SCORECARD</div>
-          <p className="eyebrow">ISSUE 01 COMPLETE</p>
+          <div className="feature-label">{isDaily ? "DAILY FIVE / SCORECARD" : "PRACTICE / SCORECARD"}</div>
+          <p className="eyebrow">{isDaily ? `PLAYED FOR #${dailyNumber} COMPLETE` : "PRACTICE FIVE COMPLETE"}</p>
           <h1>{totalScore.toLocaleString()} <small>/ 5,000</small></h1>
           <p className="result-summary">You named {correctCount} of the five players.</p>
+
+          {isDaily ? (
+            <div className="share-panel">
+              <div>
+                <span className="share-label">SHARE WITHOUT SPOILERS</span>
+                <div className="share-grid" aria-label="Anonymous daily result">
+                  {results.map((result, index) => <span key={`${result.playerId}-${index}`}>{shareGlyph(result)}</span>)}
+                </div>
+              </div>
+              <div className="share-score"><small>DAILY #{dailyNumber}</small><strong>{correctCount}/5</strong></div>
+            </div>
+          ) : null}
+
           <div className="result-list">
             {results.map((result, index) => (
               <div className="result-row" key={`${result.playerId}-${index}`}>
@@ -231,7 +355,19 @@ export default function Home() {
               </div>
             ))}
           </div>
-          <button className="primary-button" onClick={startGame}>Play another five <span>→</span></button>
+
+          {isDaily ? (
+            <div className="results-actions">
+              <button className="primary-button" onClick={shareDailyResult}>Share result <span>→</span></button>
+              <button className="secondary-button" onClick={() => startGame("practice")}>Play practice</button>
+              {shareStatus ? <p className="share-status">{shareStatus}</p> : null}
+            </div>
+          ) : (
+            <div className="results-actions">
+              <button className="primary-button" onClick={() => startGame("practice")}>Play another five <span>→</span></button>
+              <button className="secondary-button" onClick={() => startGame("daily")}>{savedDailyResults ? "View Daily Five" : "Play Daily Five"}</button>
+            </div>
+          )}
         </section>
       </main>
     );
@@ -241,16 +377,17 @@ export default function Home() {
 
   const availableScore = scoreForRevealCount(revealed, current.career.length);
   const solvedClub = current.career[Math.max(0, revealed - 1)]?.club;
+  const modeLabel = gameMode === "daily" ? `DAILY #${dailyNumber}` : "PRACTICE";
 
   return (
     <main className="shell game-shell">
       <nav className="topbar">
         <BrandLockup />
-        <div className="game-meta"><span>FILE {String(roundIndex + 1).padStart(2, "0")} / 05</span><b>{totalScore.toLocaleString()} PTS</b></div>
+        <div className="game-meta"><span>{modeLabel} · FILE {String(roundIndex + 1).padStart(2, "0")} / 05</span><b>{totalScore.toLocaleString()} PTS</b></div>
       </nav>
 
       <section className="game-card">
-        <div className="feature-label">PLAYED FOR / SENIOR CAREER</div>
+        <div className="feature-label">{gameMode === "daily" ? "DAILY FIVE / SENIOR CAREER" : "PLAYED FOR / SENIOR CAREER"}</div>
         <div className="round-head">
           <div>
             <p className="eyebrow">PLAYER FILE · {String(roundIndex + 1).padStart(2, "0")}</p>
