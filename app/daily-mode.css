@@ -1,0 +1,120 @@
+.mode-actions {
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 13px;
+}
+
+.mode-actions .primary-button,
+.mode-actions .secondary-button {
+  min-height: 54px;
+}
+
+.daily-status {
+  margin: 14px 0 0;
+  color: #625c51;
+  font-family: var(--font-condensed), "Arial Narrow", Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.share-panel {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 24px;
+  margin: 0 0 24px;
+  padding: 18px 19px;
+  border: 2px solid var(--ink);
+  background: #ead08d;
+  box-shadow: 5px 5px 0 var(--navy);
+}
+
+.share-label {
+  display: block;
+  margin-bottom: 10px;
+  font-family: var(--font-condensed), "Arial Narrow", Arial, sans-serif;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.share-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  font-size: 27px;
+  line-height: 1;
+}
+
+.share-grid span {
+  display: inline-block;
+  filter: saturate(.82);
+}
+
+.share-score {
+  min-width: 100px;
+  padding-left: 18px;
+  border-left: 2px solid var(--ink);
+  text-align: right;
+}
+
+.share-score small {
+  display: block;
+  font-family: var(--font-condensed), "Arial Narrow", Arial, sans-serif;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.share-score strong {
+  display: block;
+  margin-top: 3px;
+  font-family: var(--font-display), Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-size: 38px;
+  font-weight: 400;
+  line-height: .95;
+}
+
+.results-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.share-status {
+  flex-basis: 100%;
+  margin: 3px 0 0;
+  color: #595349;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 12px;
+}
+
+@media (max-width: 800px) {
+  .mode-actions,
+  .results-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .share-panel {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .share-score {
+    padding: 13px 0 0;
+    border-left: 0;
+    border-top: 2px solid var(--ink);
+    text-align: left;
+  }
+
+  .share-grid {
+    font-size: 24px;
+  }
+}
