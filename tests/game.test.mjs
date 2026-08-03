@@ -2,11 +2,14 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { players } from "../data/players.ts";
 import {
+  chooseDailyRounds,
   chooseRounds,
+  dailyNumberForDate,
   getPlayerSuggestions,
   normalizeAnswer,
   resolvePlayerInput,
   scoreForRevealCount,
+  utcDateKey,
 } from "../lib/game.ts";
 
 test("answer normalisation ignores accents and punctuation", () => {
@@ -52,6 +55,30 @@ test("five-round selection contains no duplicate players", () => {
   const selected = chooseRounds(players, 5, () => 0.42);
   assert.equal(selected.length, 5);
   assert.equal(new Set(selected.map((player) => player.id)).size, 5);
+});
+
+test("Daily Five is deterministic for the same date", () => {
+  const first = chooseDailyRounds(players, "2026-08-03").map((player) => player.id);
+  const second = chooseDailyRounds(players, "2026-08-03").map((player) => player.id);
+  assert.deepEqual(first, second);
+  assert.equal(first.length, 5);
+  assert.equal(new Set(first).size, 5);
+});
+
+test("different dates can produce a different Daily Five", () => {
+  const first = chooseDailyRounds(players, "2026-08-03").map((player) => player.id);
+  const second = chooseDailyRounds(players, "2026-08-04").map((player) => player.id);
+  assert.notDeepEqual(first, second);
+});
+
+test("daily numbering begins with Played For #1 on launch day", () => {
+  assert.equal(dailyNumberForDate("2026-08-03"), 1);
+  assert.equal(dailyNumberForDate("2026-08-04"), 2);
+});
+
+test("UTC date keys are stable", () => {
+  assert.equal(utcDateKey(new Date("2026-08-03T23:59:59Z")), "2026-08-03");
+  assert.equal(utcDateKey(new Date("2026-08-04T00:00:00Z")), "2026-08-04");
 });
 
 test("MVP player bank has twenty players and loans are explicitly flagged", () => {
