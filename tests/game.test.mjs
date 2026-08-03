@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { players } from "../data/players.ts";
+import { playerSources } from "../data/player-sources.ts";
 import {
   chooseDailyRounds,
   chooseRounds,
@@ -21,6 +22,13 @@ test("known aliases resolve to a real player", () => {
   const result = resolvePlayerInput(players, "R9");
   assert.equal(result.status, "matched");
   assert.equal(result.status === "matched" ? result.player.id : null, "ronaldo-nazario");
+});
+
+test("new aliases resolve across the expanded bank", () => {
+  const zlatan = resolvePlayerInput(players, "Zlatan");
+  const rvp = resolvePlayerInput(players, "RVP");
+  assert.equal(zlatan.status === "matched" ? zlatan.player.id : null, "zlatan-ibrahimovic");
+  assert.equal(rvp.status === "matched" ? rvp.player.id : null, "robin-van-persie");
 });
 
 test("unknown spellings do not consume a guess", () => {
@@ -81,7 +89,16 @@ test("UTC date keys are stable", () => {
   assert.equal(utcDateKey(new Date("2026-08-04T00:00:00Z")), "2026-08-04");
 });
 
-test("MVP player bank has twenty players and loans are explicitly flagged", () => {
-  assert.equal(players.length, 20);
+test("expanded bank has forty players and loans are explicitly flagged", () => {
+  assert.equal(players.length, 40);
   assert.equal(players.some((player) => player.career.some((stop) => stop.loan)), true);
+  assert.equal(new Set(players.map((player) => player.id)).size, 40);
+});
+
+test("every player career has an audit source", () => {
+  for (const player of players) {
+    const source = playerSources[player.id];
+    assert.ok(source, `Missing source for ${player.id}`);
+    assert.match(source.url, /^https:\/\//);
+  }
 });
