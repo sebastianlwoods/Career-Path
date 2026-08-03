@@ -29,10 +29,16 @@ test("aliases resolve across the expanded bank", () => {
   const rvp = resolvePlayerInput(players, "RVP");
   const yak = resolvePlayerInput(players, "The Yak");
   const kpb = resolvePlayerInput(players, "KPB");
+  const hba = resolvePlayerInput(players, "HBA");
+  const vdv = resolvePlayerInput(players, "VDV");
+  const okocha = resolvePlayerInput(players, "JJ Okocha");
   assert.equal(zlatan.status === "matched" ? zlatan.player.id : null, "zlatan-ibrahimovic");
   assert.equal(rvp.status === "matched" ? rvp.player.id : null, "robin-van-persie");
   assert.equal(yak.status === "matched" ? yak.player.id : null, "yakubu");
   assert.equal(kpb.status === "matched" ? kpb.player.id : null, "kevin-prince-boateng");
+  assert.equal(hba.status === "matched" ? hba.player.id : null, "hatem-ben-arfa");
+  assert.equal(vdv.status === "matched" ? vdv.player.id : null, "rafael-van-der-vaart");
+  assert.equal(okocha.status === "matched" ? okocha.player.id : null, "jay-jay-okocha");
 });
 
 test("unknown spellings do not consume a guess", () => {
@@ -93,10 +99,10 @@ test("UTC date keys are stable", () => {
   assert.equal(utcDateKey(new Date("2026-08-04T00:00:00Z")), "2026-08-04");
 });
 
-test("expanded bank has sixty players and loans are explicitly flagged", () => {
-  assert.equal(players.length, 60);
+test("expanded bank has eighty players and loans are explicitly flagged", () => {
+  assert.equal(players.length, 80);
   assert.equal(players.some((player) => player.career.some((stop) => stop.loan)), true);
-  assert.equal(new Set(players.map((player) => player.id)).size, 60);
+  assert.equal(new Set(players.map((player) => player.id)).size, 80);
 });
 
 test("every player career has an audit source", () => {
