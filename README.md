@@ -16,6 +16,7 @@ Played For is a five-round football knowledge game. A player's senior clubs are 
 - Senior competitive clubs only.
 - Loan spells are included and marked `(loan)`.
 - Return spells appear again in the chronology.
+- Reserve/B-team spells are excluded by default.
 - One real guess per player.
 - Wrong recognised player = 0 points and the round ends.
 - Invalid/unrecognised spelling does **not** use the guess.
@@ -24,8 +25,9 @@ Played For is a five-round football knowledge game. A player's senior clubs are 
 
 ## Player bank
 
-- 40 curated retired players are currently available across Daily Five and Practice.
-- The bank is split into a base set and expansion file so it can grow without turning into one unmanageable data file.
+- 80 curated players are currently available across Daily Five and Practice.
+- The bank is split into base, expansion, niche and cult packs so it can keep growing without turning into one unmanageable data file.
+- The newer packs deliberately include more cult players and difficult opening clubs, rather than only household-name careers.
 - Every player ID has a corresponding career source in `data/player-sources.ts`.
 - Validation tests fail if a player is missing a source or if duplicate player IDs are introduced.
 
@@ -53,7 +55,8 @@ The score is based on the proportion of the career still hidden after the first 
 ## Next up
 
 - Curate Daily Five difficulty rather than drawing five completely unconstrained profiles.
+- Freeze published Daily Five line-ups so later bank expansions cannot reshuffle an already released date.
 - Add recent-player avoidance in Practice.
 - Add properly licensed player imagery to the reveal state.
-- Grow the sourced player bank beyond 40.
+- Continue growing the sourced player bank.
 - Add streaks only after the Daily Five system has proved stable.
