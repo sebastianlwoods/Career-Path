@@ -1,0 +1,80 @@
+.brand-lockup strong,
+.hero-copy h1,
+.round-head h1,
+.results-card > h1,
+.score-badge b,
+.score-step b,
+.section-ribbon span,
+.answer-heading span,
+.how-grid h2 {
+  font-family: var(--font-display), Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-weight: 400;
+}
+
+.brand-lockup strong {
+  display: inline-block;
+  font-size: clamp(29px, 3.5vw, 47px);
+  line-height: .88;
+  letter-spacing: -.015em;
+  transform: skew(-6deg);
+  transform-origin: left center;
+}
+
+.hero-copy h1 {
+  line-height: .86;
+  letter-spacing: -.015em;
+  text-wrap: balance;
+}
+
+.round-head h1 {
+  line-height: .9;
+  letter-spacing: 0;
+}
+
+.preview-ribbon,
+.feature-label,
+.brand-kicker,
+.beta-pill,
+.cover-line,
+.eyebrow,
+.rule-row span,
+.primary-button,
+.secondary-button,
+.game-meta,
+.score-step span,
+.section-ribbon small,
+.stop-index,
+.hidden-career-stop > span,
+.hidden-career-stop i,
+.answer-zone label,
+.input-help,
+.input-error,
+.result-kicker,
+.text-button {
+  font-family: var(--font-condensed), "Arial Narrow", Arial, sans-serif;
+  font-weight: 800;
+}
+
+.cover-line,
+.preview-ribbon,
+.feature-label,
+.section-ribbon span {
+  letter-spacing: .035em;
+}
+
+.primary-button,
+.secondary-button {
+  font-size: 15px;
+  letter-spacing: .035em;
+}
+
+.score-badge b,
+.score-step b {
+  letter-spacing: .01em;
+}
+
+@media (max-width: 800px) {
+  .brand-lockup strong {
+    font-size: 30px;
+  }
+}
