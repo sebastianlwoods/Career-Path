@@ -1,3 +1,5 @@
+import { extraPlayers } from "./players-extra";
+
 export type CareerStop = {
   club: string;
   loan?: boolean;
@@ -11,7 +13,7 @@ export type Player = {
   career: CareerStop[];
 };
 
-export const players: Player[] = [
+const basePlayers: Player[] = [
   {
     id: "patrick-vieira",
     name: "Patrick Vieira",
@@ -337,3 +339,5 @@ export const players: Player[] = [
     ],
   },
 ];
+
+export const players: Player[] = [...basePlayers, ...extraPlayers];
