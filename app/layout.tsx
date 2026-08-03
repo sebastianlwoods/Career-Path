@@ -16,8 +16,8 @@ const condensed = Roboto_Condensed({
 });
 
 export const metadata: Metadata = {
-  title: "Career Path",
-  description: "Guess the footballer from their clubs.",
+  title: "Played For",
+  description: "Guess the footballer from the clubs they played for.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
