@@ -6,7 +6,9 @@
 .score-step b,
 .section-ribbon span,
 .answer-heading span,
-.how-grid h2 {
+.how-grid h2,
+.reveal-splash h2,
+.reveal-score strong {
   font-family: var(--font-display), Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
   font-weight: 400;
 }
@@ -50,7 +52,12 @@
 .input-help,
 .input-error,
 .result-kicker,
-.text-button {
+.text-button,
+.reveal-kicker,
+.reveal-stamp,
+.reveal-meta,
+.reveal-score small,
+.reveal-score span {
   font-family: var(--font-condensed), "Arial Narrow", Arial, sans-serif;
   font-weight: 800;
 }
@@ -73,8 +80,174 @@
   letter-spacing: .01em;
 }
 
+.reveal-splash {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 28px;
+  align-items: end;
+  margin: 25px 0 29px;
+  padding: 25px 25px 22px;
+  border: 2px solid var(--ink);
+  box-shadow: 7px 7px 0 var(--ink);
+  overflow: hidden;
+  animation: revealDrop .2s ease-out both;
+}
+
+.reveal-correct {
+  background: #b8d2bc;
+}
+
+.reveal-wrong {
+  background: #e4b2a9;
+}
+
+.reveal-splash::before {
+  content: "";
+  position: absolute;
+  width: 130px;
+  height: 14px;
+  top: 14px;
+  right: -34px;
+  background: rgba(255,255,255,.45);
+  transform: rotate(38deg);
+}
+
+.reveal-copy {
+  min-width: 0;
+}
+
+.reveal-kicker {
+  margin: 0 0 7px;
+  font-size: 10px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.reveal-splash h2 {
+  margin: 0;
+  font-size: clamp(38px, 7vw, 66px);
+  line-height: .88;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.reveal-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.reveal-meta span {
+  padding: 6px 8px 5px;
+  border: 1px solid var(--ink);
+  background: rgba(255,255,255,.34);
+}
+
+.reveal-score {
+  width: min(250px, 34vw);
+  padding: 14px 15px 13px;
+  border: 2px solid var(--ink);
+  background: var(--cream);
+  box-shadow: 4px 4px 0 var(--ink);
+  text-align: right;
+}
+
+.reveal-score small {
+  display: block;
+  font-size: 9px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.reveal-score strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 42px;
+  line-height: .95;
+}
+
+.reveal-score span {
+  display: block;
+  margin-top: 7px;
+  font-size: 10px;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.reveal-stamp {
+  position: absolute;
+  top: 13px;
+  right: 18px;
+  padding: 5px 8px 4px;
+  border: 2px solid var(--ink);
+  background: var(--mustard);
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  transform: rotate(3deg);
+}
+
+.reveal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 3px double var(--ink);
+}
+
+.reveal-footer p {
+  margin: 0;
+  color: #5d574b;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+@keyframes revealDrop {
+  from { opacity: 0; transform: translateY(-7px) rotate(-.25deg); }
+  to { opacity: 1; transform: translateY(0) rotate(0); }
+}
+
 @media (max-width: 800px) {
   .brand-lockup strong {
     font-size: 30px;
+  }
+
+  .reveal-splash {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 23px 18px 19px;
+  }
+
+  .reveal-score {
+    width: 100%;
+    text-align: left;
+  }
+
+  .reveal-stamp {
+    position: static;
+    width: fit-content;
+    grid-row: 1;
+    margin-bottom: -7px;
+  }
+
+  .reveal-copy {
+    grid-row: 2;
+  }
+
+  .reveal-score {
+    grid-row: 3;
+  }
+
+  .reveal-footer {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
