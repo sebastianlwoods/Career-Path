@@ -1,6 +1,7 @@
 import type { Player } from "../data/players";
 
 export const ROUND_COUNT = 5;
+export const DAILY_EPOCH = "2026-08-03";
 
 export function scoreForRevealCount(revealed: number, totalStops: number) {
   if (revealed <= 0 || totalStops <= 0) return 0;
@@ -65,4 +66,40 @@ export function chooseRounds(players: Player[], count = ROUND_COUNT, random = Ma
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
   return shuffled.slice(0, Math.min(count, shuffled.length));
+}
+
+export function utcDateKey(date = new Date()) {
+  return date.toISOString().slice(0, 10);
+}
+
+function parseDateKey(dateKey: string) {
+  const [year, month, day] = dateKey.split("-").map(Number);
+  return Date.UTC(year, month - 1, day);
+}
+
+export function dailyNumberForDate(dateKey: string) {
+  const oneDay = 24 * 60 * 60 * 1000;
+  const difference = Math.floor((parseDateKey(dateKey) - parseDateKey(DAILY_EPOCH)) / oneDay);
+  return Math.max(1, difference + 1);
+}
+
+function seededRandom(seedText: string) {
+  let seed = 2166136261;
+  for (let index = 0; index < seedText.length; index += 1) {
+    seed ^= seedText.charCodeAt(index);
+    seed = Math.imul(seed, 16777619);
+  }
+
+  let value = seed >>> 0;
+  return () => {
+    value += 0x6d2b79f5;
+    let result = value;
+    result = Math.imul(result ^ (result >>> 15), result | 1);
+    result ^= result + Math.imul(result ^ (result >>> 7), result | 61);
+    return ((result ^ (result >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+export function chooseDailyRounds(players: Player[], dateKey: string, count = ROUND_COUNT) {
+  return chooseRounds(players, count, seededRandom(`played-for:${dateKey}`));
 }
