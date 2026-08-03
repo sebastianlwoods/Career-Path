@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Anton, Roboto_Condensed } from "next/font/google";
 import "./globals.css";
 import "./magazine-type.css";
+import "./daily-mode.css";
 
 const display = Anton({
   weight: "400",
