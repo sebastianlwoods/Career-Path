@@ -1,5 +1,6 @@
 import { extraPlayers } from "./players-extra";
 import { cultPlayers } from "./players-cult";
+import { famousPlayers } from "./players-famous";
 
 export type CareerStop = {
   club: string;
@@ -341,4 +342,9 @@ const basePlayers: Player[] = [
   },
 ];
 
-export const players: Player[] = [...basePlayers, ...extraPlayers, ...cultPlayers];
+export const players: Player[] = [
+  ...basePlayers,
+  ...extraPlayers,
+  ...cultPlayers,
+  ...famousPlayers,
+];
