@@ -25,12 +25,11 @@ Played For is a five-round football knowledge game. A player's senior clubs are 
 
 ## Player bank
 
-- 100 curated players are currently available across Daily Five and Practice.
-- The bank is split into base, expansion, niche, cult and famous packs so it can keep growing without becoming one unmanageable data file.
-- Every player ID has a corresponding career source in `data/player-sources.ts`.
-- Every profile has an initial `easy`, `normal` or `hard` assignment in `data/player-difficulty.ts`.
-- Current tier sizes are 35 easy, 41 normal and 24 hard. These can be refined through playtesting before separate modes are exposed in the UI.
-- Validation tests fail if a player is missing a source, is missing a difficulty tier, appears in multiple tiers, or duplicates another player ID.
+- 300 curated players are available across Daily Five and Practice.
+- The bank is split into base, expansion, niche, cult, famous, legends, Premier League, continental and world packs.
+- Difficulty metadata currently provides 100 easy, 131 normal and 69 hard profiles.
+- Career audit references are kept across the original and expanded source registries.
+- Validation tests fail on missing sources, duplicate IDs or missing/duplicated difficulty assignments.
 
 ## Run locally
 
@@ -55,7 +54,8 @@ The score is based on the proportion of the career still hidden after the first 
 
 ## Next up
 
-- Use the difficulty registry to build Easy, Normal and Hard practice modes and a balanced Daily Five.
+- Use the new difficulty metadata to add Easy, Normal and Hard Practice modes.
+- Curate Daily Five difficulty rather than drawing five completely unconstrained profiles.
 - Freeze published Daily Five line-ups so later bank expansions cannot reshuffle an already released date.
 - Add recent-player avoidance in Practice.
 - Add properly licensed player imagery to the reveal state.
