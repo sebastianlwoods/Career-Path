@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { players } from "../data/players.ts";
+import { playerIdsByDifficulty, playersForDifficulty } from "../data/player-difficulty.ts";
 import { playerSources } from "../data/player-sources.ts";
+import { players } from "../data/players.ts";
 import {
   chooseDailyRounds,
   chooseRounds,
@@ -32,6 +33,9 @@ test("aliases resolve across the expanded bank", () => {
   const hba = resolvePlayerInput(players, "HBA");
   const vdv = resolvePlayerInput(players, "VDV");
   const okocha = resolvePlayerInput(players, "JJ Okocha");
+  const wazza = resolvePlayerInput(players, "Wazza");
+  const kun = resolvePlayerInput(players, "Kun");
+  const rvn = resolvePlayerInput(players, "RVN");
   assert.equal(zlatan.status === "matched" ? zlatan.player.id : null, "zlatan-ibrahimovic");
   assert.equal(rvp.status === "matched" ? rvp.player.id : null, "robin-van-persie");
   assert.equal(yak.status === "matched" ? yak.player.id : null, "yakubu");
@@ -39,6 +43,9 @@ test("aliases resolve across the expanded bank", () => {
   assert.equal(hba.status === "matched" ? hba.player.id : null, "hatem-ben-arfa");
   assert.equal(vdv.status === "matched" ? vdv.player.id : null, "rafael-van-der-vaart");
   assert.equal(okocha.status === "matched" ? okocha.player.id : null, "jay-jay-okocha");
+  assert.equal(wazza.status === "matched" ? wazza.player.id : null, "wayne-rooney");
+  assert.equal(kun.status === "matched" ? kun.player.id : null, "sergio-aguero");
+  assert.equal(rvn.status === "matched" ? rvn.player.id : null, "ruud-van-nistelrooy");
 });
 
 test("unknown spellings do not consume a guess", () => {
@@ -99,10 +106,10 @@ test("UTC date keys are stable", () => {
   assert.equal(utcDateKey(new Date("2026-08-04T00:00:00Z")), "2026-08-04");
 });
 
-test("expanded bank has eighty players and loans are explicitly flagged", () => {
-  assert.equal(players.length, 80);
+test("expanded bank has one hundred unique players and loans are explicitly flagged", () => {
+  assert.equal(players.length, 100);
   assert.equal(players.some((player) => player.career.some((stop) => stop.loan)), true);
-  assert.equal(new Set(players.map((player) => player.id)).size, 80);
+  assert.equal(new Set(players.map((player) => player.id)).size, 100);
 });
 
 test("every player career has an audit source", () => {
@@ -111,4 +118,20 @@ test("every player career has an audit source", () => {
     assert.ok(source, `Missing source for ${player.id}`);
     assert.match(source.url, /^https:\/\//);
   }
+});
+
+test("every player is assigned to exactly one difficulty tier", () => {
+  const assignedIds = Object.values(playerIdsByDifficulty).flat();
+  assert.equal(assignedIds.length, players.length);
+  assert.equal(new Set(assignedIds).size, players.length);
+  assert.deepEqual(
+    new Set(assignedIds),
+    new Set(players.map((player) => player.id))
+  );
+});
+
+test("difficulty helpers return usable player pools", () => {
+  assert.equal(playersForDifficulty(players, "easy").length, 35);
+  assert.equal(playersForDifficulty(players, "normal").length, 41);
+  assert.equal(playersForDifficulty(players, "hard").length, 24);
 });
