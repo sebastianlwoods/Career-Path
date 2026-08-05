@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { allPlayerSources } from "../data/all-player-sources.ts";
 import { playerIdsByDifficulty, playersForDifficulty } from "../data/player-difficulty.ts";
-import { playerSources } from "../data/player-sources.ts";
 import { players } from "../data/players.ts";
 import {
   chooseDailyRounds,
@@ -19,33 +19,21 @@ test("answer normalisation ignores accents and punctuation", () => {
   assert.equal(normalizeAnswer("  El-Niño! "), "el nino");
 });
 
-test("known aliases resolve to a real player", () => {
-  const result = resolvePlayerInput(players, "R9");
-  assert.equal(result.status, "matched");
-  assert.equal(result.status === "matched" ? result.player.id : null, "ronaldo-nazario");
-});
+test("known aliases resolve to real players across the full bank", () => {
+  const aliases = {
+    R9: "ronaldo-nazario",
+    Wazza: "wayne-rooney",
+    Kun: "sergio-aguero",
+    RVN: "ruud-van-nistelrooy",
+    Zizou: "zinedine-zidane",
+    Gazza: "paul-gascoigne",
+    Batigol: "gabriel-batistuta",
+  };
 
-test("aliases resolve across the expanded bank", () => {
-  const zlatan = resolvePlayerInput(players, "Zlatan");
-  const rvp = resolvePlayerInput(players, "RVP");
-  const yak = resolvePlayerInput(players, "The Yak");
-  const kpb = resolvePlayerInput(players, "KPB");
-  const hba = resolvePlayerInput(players, "HBA");
-  const vdv = resolvePlayerInput(players, "VDV");
-  const okocha = resolvePlayerInput(players, "JJ Okocha");
-  const wazza = resolvePlayerInput(players, "Wazza");
-  const kun = resolvePlayerInput(players, "Kun");
-  const rvn = resolvePlayerInput(players, "RVN");
-  assert.equal(zlatan.status === "matched" ? zlatan.player.id : null, "zlatan-ibrahimovic");
-  assert.equal(rvp.status === "matched" ? rvp.player.id : null, "robin-van-persie");
-  assert.equal(yak.status === "matched" ? yak.player.id : null, "yakubu");
-  assert.equal(kpb.status === "matched" ? kpb.player.id : null, "kevin-prince-boateng");
-  assert.equal(hba.status === "matched" ? hba.player.id : null, "hatem-ben-arfa");
-  assert.equal(vdv.status === "matched" ? vdv.player.id : null, "rafael-van-der-vaart");
-  assert.equal(okocha.status === "matched" ? okocha.player.id : null, "jay-jay-okocha");
-  assert.equal(wazza.status === "matched" ? wazza.player.id : null, "wayne-rooney");
-  assert.equal(kun.status === "matched" ? kun.player.id : null, "sergio-aguero");
-  assert.equal(rvn.status === "matched" ? rvn.player.id : null, "ruud-van-nistelrooy");
+  for (const [input, expectedId] of Object.entries(aliases)) {
+    const result = resolvePlayerInput(players, input);
+    assert.equal(result.status === "matched" ? result.player.id : null, expectedId);
+  }
 });
 
 test("unknown spellings do not consume a guess", () => {
@@ -106,15 +94,15 @@ test("UTC date keys are stable", () => {
   assert.equal(utcDateKey(new Date("2026-08-04T00:00:00Z")), "2026-08-04");
 });
 
-test("expanded bank has one hundred unique players and loans are explicitly flagged", () => {
-  assert.equal(players.length, 100);
+test("expanded bank has three hundred unique players and loans are explicitly flagged", () => {
+  assert.equal(players.length, 300);
   assert.equal(players.some((player) => player.career.some((stop) => stop.loan)), true);
-  assert.equal(new Set(players.map((player) => player.id)).size, 100);
+  assert.equal(new Set(players.map((player) => player.id)).size, 300);
 });
 
 test("every player career has an audit source", () => {
   for (const player of players) {
-    const source = playerSources[player.id];
+    const source = allPlayerSources[player.id];
     assert.ok(source, `Missing source for ${player.id}`);
     assert.match(source.url, /^https:\/\//);
   }
@@ -130,8 +118,8 @@ test("every player is assigned to exactly one difficulty tier", () => {
   );
 });
 
-test("difficulty helpers return usable player pools", () => {
-  assert.equal(playersForDifficulty(players, "easy").length, 35);
-  assert.equal(playersForDifficulty(players, "normal").length, 41);
-  assert.equal(playersForDifficulty(players, "hard").length, 24);
+test("difficulty helpers return balanced player pools", () => {
+  assert.equal(playersForDifficulty(players, "easy").length, 100);
+  assert.equal(playersForDifficulty(players, "normal").length, 131);
+  assert.equal(playersForDifficulty(players, "hard").length, 69);
 });
